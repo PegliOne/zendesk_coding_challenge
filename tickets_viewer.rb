@@ -1,5 +1,7 @@
 require 'httparty'
+require 'pry'
 
+# Get the ticket from the API
 response = HTTParty.get("https://pamelainc.zendesk.com/api/v2/tickets.json", :headers => {'Authorization': 'Basic cGFtZWxhLmUuZ2xpY2ttYW5AZ21haWwuY29tOlNOTFQxMmhycw=='}).parsed_response["tickets"]
 
 puts "Welcome to the ticket viewer"
@@ -9,8 +11,12 @@ input = nil
 
 # Prints all tickets. It shows 25 tickets at a time, then asks the user if they want to see more
 def show_all_tickets response
-  # Add Pagination
-  response.map do |ticket|
+  # These indices determine which tickets will be displayed
+  first_index = 0
+  last_index = 24
+  # Selects the first 25 tickets
+  tickets = response[first_index..last_index]
+  tickets.map do |ticket|
     puts "Ticket: #{ticket["id"]}, Subject: #{ticket["subject"]}"
     puts ""
   end
@@ -27,8 +33,21 @@ def show_all_tickets response
 
     case input
     when "1"
-      puts "Showing the next 25 tickets"
-      puts ""
+      # Cycles through the tickets in groups of 25
+      unless first_index + 25 >= response.length
+        first_index += 25
+        last_index += 25
+      # Cycles back to the start of the list once the end is reached
+      else
+        first_index = 0
+        last_index = 24
+      end
+      # Selects and prints the next set of tickets
+      tickets = response[first_index..last_index]
+      tickets.map do |ticket|
+        puts "Ticket: #{ticket["id"]}, Subject: #{ticket["subject"]}"
+        puts ""
+      end
     when "m"
       puts "Returning to main menu"
       puts ""
@@ -42,10 +61,13 @@ end
 def show_one_ticket response
   puts ""
   print "Enter a ticket number: "
-  input = gets.chomp
-  # Show Ticket
-  puts "Showing ticket #{input}"
+  input = gets.chomp.to_i
+  ticket = response.find { |ticket| ticket["id"] == input}
   puts ""
+  puts "Ticket: #{ticket["id"]}, Subject: #{ticket["subject"]}"
+  puts "-------------------------------------------------------"
+  puts ticket["description"]
+  puts "-------------------------------------------------------"
 
   input = nil
 
@@ -60,7 +82,11 @@ def show_one_ticket response
 
     unless input == "m"
       puts ""
-      puts "Showing ticket #{input}"
+      ticket = response.find { |ticket| ticket["id"] == input.to_i}
+      puts "Ticket: #{ticket["id"]}, Subject: #{ticket["subject"]}"
+      puts "-------------------------------------------------------"
+      puts ticket["description"]
+      puts "-------------------------------------------------------"
     else
       puts ""
       puts "Returning to main menu"
