@@ -1,9 +1,16 @@
 require 'httparty'
 require 'pry'
 
-# Get the ticket from the API
+# Get the tickets from the API
 response = HTTParty.get("https://pamelainc.zendesk.com/api/v2/tickets.json", :headers => {'Authorization': 'Basic cGFtZWxhLmUuZ2xpY2ttYW5AZ21haWwuY29tOlNOTFQxMmhycw=='}).parsed_response["tickets"]
 
+# Quits the program straight away if the API is unavailable (or if the data fails to load)
+if response.nil? || response.empty?
+  puts "The ticket viewer cannot run at the moment because the API is unavailable. Pleast try again later."
+  return
+end
+
+# Welcomes the user to the program when they first open it
 puts "Welcome to the ticket viewer"
 puts ""
 
@@ -96,6 +103,7 @@ end
 
 # Displays the main menu
 until input == 'q'
+
   puts "Select from the following options"
   puts "* Type '1' to view all tickets"
   puts "* Type '2' to view a ticket"

@@ -8,7 +8,7 @@
 
 * 3. Make the menu options behave correctly (pagination and specific ticket selection included) (completed 4:00pm 14/05/21)
 
-* 4. Make the ticket viewer able to handle the API being unavailable and will display a friendly error message (?)
+* 4. Make the ticket viewer able to handle the API being unavailable and will display a friendly error message (complete 8:45pm 16/05/21)
 
 * 5. Include at least a few happy path tests and tells the user something is wrong if there's a program error (?)
 
